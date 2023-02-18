@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery.terminal/js/jquery.terminal.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery.terminal/css/jquery.terminal.min.css"/>
+        <style>
+            .terminal-output span, .terminal-output div {
+                color: #32CD32 !important;
+            }
+        :root {
+        --size: 1.5;
+        }
+        </style>
+    </head>
+    <body>
+        <script>
+            let basePath = './';
+            var currPath = basePath
+            $('body').terminal({
+                cmd: function() {
+                    var contents = ''; // Placeholder for file contents
+                    // Load file contents using jQuery
+                    $.get("Commands.txt", function(data) {
+                        contents = data;
+                    }.bind(this)).done(function() {
+                        // Print file contents to the terminal
+                        this.echo(contents);
+                    }.bind(this)).fail(function() {
+                        this.error('Error: Command list file not found');
+                    }.bind(this));
+                },
+                cat: function(filename) {
+                    filename = currPath + filename
+                    var contents = ''; // Placeholder for file contents
+                    // Load file contents using jQuery
+                    $.get(filename, function(data) {
+                        contents = data;
+                    }.bind(this)).done(function() {
+                        // Print file contents to the terminal
+                        this.echo(contents);
+                    }.bind(this)).fail(function() {
+                        this.error('Error: File not found');
+                    }.bind(this));
+                },
+                ls: function() {
+                    var contents = ''; // Placeholder for file contents
+                    // Load file contents using jQuery
+                    $.get(currPath + "Dir_List.txt", function(data) {
+                        contents = data;
+                    }.bind(this)).done(function() {
+                        this.echo();
+                        // Print file contents to the terminal
+                        this.echo(contents);
+                        this.echo();
+                    }.bind(this)).fail(function() {
+                        this.error('Error: Directory contents list file not found');
+                    }.bind(this));
+                },
+                cd: function(dirname) {
+                    var contents = ''; // Placeholder for file contents
+                    // Load file contents using jQuery
+                    $.get(currPath + "Dir_List.txt", function(data) {
+                        contents = data;
+                    }.bind(this)).done(function() {
+                        // If dirname is not empty, check if it is ".." to move to parent directory
+                        if (dirname) {
+                            if (dirname === "..") {
+                                // Define rootPath variable and assign it the value of basePath
+                                var rootPath = basePath;
+                                // Check if current path is already at root directory
+                                if (currPath === rootPath) {
+                                    this.echo(`cd: already at root directory`);
+                                } else {
+                                    // Remove the last directory from current path
+                                    currPath = currPath.substring(0, currPath.slice(0, -1).lastIndexOf("/") + 1);
+                                    // Store the new base path in localStorage
+                                    localStorage.setItem('basePath', currPath);
+                                    // Display a message to the user
+                                    this.echo(`Moved to directory: ${currPath}`);
+                                }
+                            } else {
+                                // Append dirname to the base path
+                                if (contents.includes(dirname.slice(0, -1)) && !(contents.includes(dirname + ".")) && !(dirname.includes("."))) {
+                                    var lastChar = dirname.slice(-1);
+                                    if (lastChar === "/") {
+                                        currPath += dirname;
+                                    } else {
+                                        currPath += dirname + "/";
+                                    }
+                                    // Display a message to the user
+                                    this.echo(`Moved to directory: ${currPath}`);
+                                } else {
+                                // Tell user directory does not exist
+                                this.echo(`cd: no such file or directory: ${currPath + dirname + "/"}`);
+                                }
+                            }
+                        } else {
+                        // If no dirname is provided, print current path
+                        this.echo(`Current directory: ${currPath}`);
+                        }
+                    }.bind(this));
+                },
+                pwd: function() {
+                    // Print current path
+                    this.echo(currPath)
+                },
+                man: function(command) {
+                    var contents = ''; // Placeholder for file contents
+                    // Load file contents using jQuery
+                    $.get(currPath + "Commands.txt", function(data) {
+                        contents = data;
+                    }.bind(this)).done(function() {
+                        // If command is in list
+                        if (contents.includes(command)) {
+                            // Print link
+                            this.echo("View OSX command manual here: 'https://ss64.com/osx/" + command +".html'")
+                        } else {
+                            // Print error
+                            this.echo("Command '" + command +"' not found.")
+                        }
+                    }.bind(this));
+                }
+            }, {
+                greetings: 'Hi there and welcome to Pattonium.com! Type "cmd" to see basic commands and use "man command_name" to see how to use each command.'
+            });
+        </script>
+    </body>
+</html>
