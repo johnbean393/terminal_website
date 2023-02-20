@@ -1,0 +1,4 @@
+
+The 'pattonium.net' personal website was built as a means of promoting myself and my projects, and is currently not intended for commercial use.
+
+Here, you can use the command line interface to find useful content that I think you'll enjoy! I won't be posting very often, but I'm going to try to make every piece of content worth your time. Thanks for visiting!
